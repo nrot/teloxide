@@ -30,11 +30,12 @@ mod tests {
     #[tokio::test]
     async fn test_move_thread() {
         teloxide::enable_logging!();
+        let some_data = ConfigParameters{text: String::new()};
         let bot = Bot::new("some_telegram_token").auto_send();
         let handler = Update::filter_message().branch(
             dptree::entry().filter_command::<SimpleCommand>().endpoint(simple_commands_handler),
         );
-        let mut disp = Dispatcher::builder(bot, handler).build();
+        let mut disp = Dispatcher::builder(bot, handler).dependencies(dptree::deps![some_data]).build();
         let f_disp = disp.setup_ctrlc_handler().dispatch();
         let worker = tokio::spawn(f_disp);
     }
